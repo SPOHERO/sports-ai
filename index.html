@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AU Women's Soccer Analytics Center</title>
+  <style>
+    :root {
+      --bg: #fcfcfd;
+      --surface: #ffffff;
+      --text: #101828;
+      --muted: #475467;
+      --line: #e4e7ec;
+      --accent: #0f172a;
+      --accent-2: #d97706;
+      --soft: #f8fafc;
+      --shadow: 0 12px 30px rgba(16, 24, 40, 0.08);
+      --radius: 22px;
+      --max: 1150px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(14px);
+      background: rgba(252, 252, 253, 0.84);
+      border-bottom: 1px solid rgba(228, 231, 236, 0.9);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-size: 1rem;
+    }
+
+    .brand span {
+      color: var(--accent-2);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .hero {
+      padding: 72px 0 36px;
+      background:
+        radial-gradient(circle at top right, rgba(217, 119, 6, 0.12), transparent 28%),
+        radial-gradient(circle at top left, rgba(15, 23, 42, 0.08), transparent 26%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff7ed;
+      color: #b45309;
+      border: 1px solid #fed7aa;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 5vw, 4.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+    }
+
+    .hero p.lead {
+      margin: 18px 0 0;
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 700px;
+    }
+
+    .hero-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .btn.secondary {
+      background: white;
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .hero-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .mock-field {
+      aspect-ratio: 4 / 3;
+      border-radius: 20px;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)),
+        repeating-linear-gradient(
+          90deg,
+          #2f855a 0,
+          #2f855a 70px,
+          #2a7b51 70px,
+          #2a7b51 140px
+        );
+      position: relative;
+      border: 6px solid #ffffff;
+    }
+
+    .field-line {
+      position: absolute;
+      inset: 7% 5%;
+      border: 3px solid rgba(255,255,255,0.85);
+      border-radius: 8px;
+    }
+
+    .field-mid {
+      position: absolute;
+      left: 50%; top: 7%; bottom: 7%;
+      width: 3px;
+      background: rgba(255,255,255,0.85);
+      transform: translateX(-50%);
+    }
+
+    .field-circle {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 120px; height: 120px;
+      border: 3px solid rgba(255,255,255,0.85);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .dot {
+      position: absolute;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.22);
+    }
+
+    .dot.orange { background: #f59e0b; }
+    .dot.navy { background: #0f172a; }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .mini-panel {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .mini-panel h4 {
+      margin: 0 0 8px;
+      font-size: 0.92rem;
+    }
+
+    .metric {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    section {
+      padding: 72px 0;
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 28px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 10px;
+      font-size: 2rem;
+      letter-spacing: -0.04em;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.15rem;
+      letter-spacing: -0.03em;
+    }
+
+    .card p, .card li {
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f2f4f7;
+      color: #344054;
+      margin-bottom: 12px;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .step {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      position: relative;
+      min-height: 150px;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .step::after {
+      content: "→";
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #98a2b3;
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .step:last-child::after { display: none; }
+
+    .viz-box {
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .heatmap {
+      margin-top: 14px;
+      height: 260px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 22% 70%, rgba(239, 68, 68, 0.58), transparent 12%),
+        radial-gradient(circle at 56% 45%, rgba(245, 158, 11, 0.56), transparent 14%),
+        radial-gradient(circle at 72% 38%, rgba(249, 115, 22, 0.52), transparent 10%),
+        radial-gradient(circle at 78% 62%, rgba(217, 119, 6, 0.52), transparent 12%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2f6 100%);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+
+    .bars {
+      display: flex;
+      align-items: end;
+      gap: 14px;
+      height: 260px;
+      margin-top: 14px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 14px 14px 6px 6px;
+      background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+      position: relative;
+      min-width: 30px;
+    }
+
+    .bar.orange {
+      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .bar-label {
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    ul.clean {
+      padding-left: 18px;
+      margin: 10px 0 0;
+    }
+
+    .people {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .person {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .person h4 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+    }
+
+    .person p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .cta {
+      padding: 34px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .cta p { color: rgba(255,255,255,0.82); }
+
+    footer {
+      padding: 28px 0 48px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .grid-3,
+      .grid-2,
+      .people,
+      .pipeline {
+        grid-template-columns: 1fr;
+      }
+
+      .step::after { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        gap: 12px;
+        font-size: 0.9rem;
+      }
+
+      section { padding: 56px 0; }
+      .hero { padding-top: 52px; }
+      .panel-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top">AU <span>Women's Soccer Analytics Center</span></a>
+      <nav class="nav-links">
+        <a href="#about">About</a>
+        <a href="#focus">Research Focus</a>
+        <a href="#pipeline">Data Pipeline</a>
+        <a href="#insights">Insights</a>
+        <a href="#projects">Projects</a>
+        <a href="#team">Team</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">AI · Tracking Data · Match Intelligence</div>
+          <h1>AU Women’s Soccer Analytics Center</h1>
+          <p class="lead">
+            A research and analytics hub for Auburn women’s soccer, combining match data,
+            player tracking, machine learning, and performance insights to support tactical
+            understanding, player development, and data-driven decision making.
+          </p>
+          <p class="hero-note">
+            Built for coaches, analysts, students, and collaborators interested in sports analytics,
+            performance modeling, and applied AI in women’s soccer.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#projects">Explore Projects</a>
+            <a class="btn secondary" href="#contact">Join the Center</a>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="mock-field" aria-label="stylized soccer analytics illustration">
+            <div class="field-line"></div>
+            <div class="field-mid"></div>
+            <div class="field-circle"></div>
+            <div class="dot orange" style="left:20%; top:68%;"></div>
+            <div class="dot orange" style="left:31%; top:42%;"></div>
+            <div class="dot orange" style="left:43%; top:61%;"></div>
+            <div class="dot orange" style="left:58%; top:34%;"></div>
+            <div class="dot orange" style="left:73%; top:55%;"></div>
+            <div class="dot navy" style="left:25%; top:30%;"></div>
+            <div class="dot navy" style="left:40%; top:23%;"></div>
+            <div class="dot navy" style="left:55%; top:52%;"></div>
+            <div class="dot navy" style="left:68%; top:28%;"></div>
+            <div class="dot navy" style="left:79%; top:40%;"></div>
+          </div>
+          <div class="panel-grid">
+            <div class="mini-panel">
+              <h4>Expected Goal Trend</h4>
+              <div class="metric">+18%</div>
+            </div>
+            <div class="mini-panel">
+              <h4>Press Recovery Rate</h4>
+              <div class="metric">62%</div>
+            </div>
+            <div class="mini-panel">
+              <h4>Tracking Coverage</h4>
+              <div class="metric">95%</div>
+            </div>
+            <div class="mini-panel">
+              <h4>AI Reports Generated</h4>
+              <div class="metric">24</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-head">
+          <h2>About the Center</h2>
+          <p>
+            This site is designed as a central place to present Auburn women’s soccer analytics work,
+            including performance analysis, player evaluation, match intelligence, and AI-supported research projects.
+          </p>
+        </div>
+        <div class="grid-3">
+          <article class="card">
+            <div class="badge">Mission</div>
+            <h3>Support competitive performance</h3>
+            <p>
+              Translate raw match and training data into clear insights that can support tactical review,
+              player development, and evidence-based decision making.
+            </p>
+          </article>
+          <article class="card">
+            <div class="badge">Research</div>
+            <h3>Bridge sports and AI</h3>
+            <p>
+              Build a platform where sports analytics, statistics, and machine learning come together through practical,
+              interpretable applications in women’s soccer.
+            </p>
+          </article>
+          <article class="card">
+            <div class="badge">Education</div>
+            <h3>Create hands-on student opportunities</h3>
+            <p>
+              Involve students in real-world data workflows, visualization, modeling, and reporting for applied learning
+              in modern sports data science.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="focus" style="background:#f8fafc; border-top:1px solid #eef2f6; border-bottom:1px solid #eef2f6;">
+      <div class="container">
+        <div class="section-head">
+          <h2>Research Focus</h2>
+          <p>
+            The center can grow around several complementary analytics directions, from basic match reporting to advanced AI-based modeling.
+          </p>
+        </div>
+        <div class="grid-3">
+          <article class="card">
+            <h3>Match & Team Performance</h3>
+            <ul class="clean">
+              <li>Possession structure and territorial control</li>
+              <li>Shot quality and chance creation</li>
+              <li>Pressing and defensive recovery patterns</li>
+              <li>Passing networks and build-up sequences</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Player Analytics</h3>
+            <ul class="clean">
+              <li>Role-based player profiles</li>
+              <li>Movement intensity and workload</li>
+              <li>Spatial tendencies and heatmaps</li>
+              <li>Development trends across time</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>AI & Predictive Modeling</h3>
+            <ul class="clean">
+              <li>Event prediction and sequence modeling</li>
+              <li>Player tracking and trajectory analysis</li>
+              <li>Automated report generation</li>
+              <li>Video-to-insight pipelines</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="pipeline">
+      <div class="container">
+        <div class="section-head">
+          <h2>Data Pipeline</h2>
+          <p>
+            A simple, credible structure for the center is to show how raw data becomes actionable insight.
+          </p>
+        </div>
+        <div class="pipeline">
+          <div class="step">
+            <strong>1. Collect</strong>
+            <span>Match video, event logs, player tracking, training data, and performance summaries.</span>
+          </div>
+          <div class="step">
+            <strong>2. Clean</strong>
+            <span>Standardize timestamps, align player identifiers, remove noise, and validate data quality.</span>
+          </div>
+          <div class="step">
+            <strong>3. Model</strong>
+            <span>Estimate metrics, detect patterns, build predictive models, and compare player or team profiles.</span>
+          </div>
+          <div class="step">
+            <strong>4. Visualize</strong>
+            <span>Create heatmaps, trend charts, dashboards, match reports, and role-based summaries.</span>
+          </div>
+          <div class="step">
+            <strong>5. Act</strong>
+            <span>Deliver interpretable insights for coaches, staff, students, and research collaborators.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="insights" style="background:#f8fafc; border-top:1px solid #eef2f6; border-bottom:1px solid #eef2f6;">
+      <div class="container">
+        <div class="section-head">
+          <h2>Example Insights</h2>
+          <p>
+            These are placeholder visual sections showing the kind of outputs your center could feature on the site.
+          </p>
+        </div>
+        <div class="grid-2">
+          <div class="viz-box">
+            <h3>Attacking Heatmap</h3>
+            <p style="color:var(--muted); margin-top:0;">Illustrate where the team creates pressure, receives the ball, or generates shots.</p>
+            <div class="heatmap"></div>
+          </div>
+          <div class="viz-box">
+            <h3>Team Performance Snapshot</h3>
+            <p style="color:var(--muted); margin-top:0;">Compare recent match metrics across selected performance dimensions.</p>
+            <div class="bars">
+              <div class="bar orange" style="height:72%;"><span class="bar-label">xG</span></div>
+              <div class="bar" style="height:58%;"><span class="bar-label">Press</span></div>
+              <div class="bar orange" style="height:80%;"><span class="bar-label">Pass</span></div>
+              <div class="bar" style="height:64%;"><span class="bar-label">Recoveries</span></div>
+              <div class="bar orange" style="height:70%;"><span class="bar-label">Final 3rd</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="container">
+        <div class="section-head">
+          <h2>Projects</h2>
+          <p>
+            Start simple. These project cards are intentionally realistic for a first version of the website.
+          </p>
+        </div>
+        <div class="grid-3">
+          <article class="card">
+            <div class="badge">Current</div>
+            <h3>Match Report Automation</h3>
+            <p>
+              Develop repeatable post-match summaries with key metrics, event timelines, and player notes.
+            </p>
+          </article>
+          <article class="card">
+            <div class="badge">In Progress</div>
+            <h3>Player Movement Profiling</h3>
+            <p>
+              Quantify player roles using spatial behavior, intensity measures, and recurring tactical patterns.
+            </p>
+          </article>
+          <article class="card">
+            <div class="badge">Future</div>
+            <h3>AI-Assisted Video Analytics</h3>
+            <p>
+              Explore semi-automated pipelines that connect game video with tracking and event-level insights.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="team" style="background:#f8fafc; border-top:1px solid #eef2f6; border-bottom:1px solid #eef2f6;">
+      <div class="container">
+        <div class="section-head">
+          <h2>Team</h2>
+          <p>
+            Replace these placeholders with your real lab members, students, collaborators, and coaching contacts.
+          </p>
+        </div>
+        <div class="people">
+          <div class="person">
+            <h4>Director / Faculty Lead</h4>
+            <p>Statistics, AI, sports analytics, and applied modeling.</p>
+          </div>
+          <div class="person">
+            <h4>Student Analysts</h4>
+            <p>Data cleaning, visualization, match coding, and report generation.</p>
+          </div>
+          <div class="person">
+            <h4>Collaborators</h4>
+            <p>Coaches, performance staff, computer vision researchers, and domain experts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <div class="cta">
+          <h2 style="margin-top:0; font-size:2rem; letter-spacing:-0.04em;">Build this into your real center website</h2>
+          <p>
+            This first version is intentionally clean and easy to edit. You can now replace the placeholder text with your own
+            team description, add real figures, connect project links, and publish it as a GitHub Pages site.
+          </p>
+          <div class="hero-actions" style="margin-top:20px;">
+            <a class="btn secondary" href="mailto:your-email@auburn.edu">Contact</a>
+            <a class="btn secondary" href="#top">Back to Top</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      AU Women’s Soccer Analytics Center · Auburn University · AI, data science, and performance analysis for women’s soccer.
+    </div>
+  </footer>
+</body>
+</html>
